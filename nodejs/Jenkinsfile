@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Hello World') {
+            steps {
+                script {
+                    // Install Node.js if not already installed
+                    def nodeHome = tool name: 'Node.js', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    if (nodeHome == null) {
+                        echo "Node.js not found. Installing..."
+                        nodeHome = tool name: 'Node.js', type: 'jenkins.plugins.nodejs.tools.NodeJSInstaller'
+                    }
+                    env.PATH = "${nodeHome}/bin:${env.PATH}"
+                    
+                    // Execute the "Hello World" program
+                    sh 'node -e "console.log(\'Hello World\')"'
+                }
+            }
+        }
+    }
+}
