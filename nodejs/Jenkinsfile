@@ -6,10 +6,10 @@ pipeline {
             steps {
                 script {
                     // Install Node.js if not already installed
-                    def nodeHome = tool name: 'Node.js', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    def nodeHome = tool name: 'nodejs', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
                     if (nodeHome == null) {
                         echo "Node.js not found. Installing..."
-                        nodeHome = tool name: 'Node.js', type: 'jenkins.plugins.nodejs.tools.NodeJSInstaller'
+                        nodeHome = tool name: 'nodejs', type: 'jenkins.plugins.nodejs.tools.NodeJSInstaller'
                     }
                     env.PATH = "${nodeHome}/bin:${env.PATH}"
                     
