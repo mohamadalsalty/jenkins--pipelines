@@ -1,20 +1,38 @@
 pipeline {
     agent any
-    
+
     stages {
-        stage('Hello World') {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Preparing env') {
             steps {
                 script {
-                    // Install Node.js if not already installed
                     def nodeHome = tool name: 'nodejs', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
                     if (nodeHome == null) {
-                        echo "Node.js not found. Installing..."
+                        echo 'Node.js not found. Installing...'
                         nodeHome = tool name: 'nodejs', type: 'jenkins.plugins.nodejs.tools.NodeJSInstaller'
                     }
                     env.PATH = "${nodeHome}/bin:${env.PATH}"
-                    
-                    // Execute the "Hello World" program
-                    sh 'node -e "console.log(\'Hello World\')"'
+                }
+            }
+        }
+
+        stage('Clone Repository') {
+            steps {
+                script {
+                    sh "git clone ${Repository} ."
+                }
+            }
+        }
+
+        stage('Running the app') {
+            steps {
+                script {
+                    sh "node ${AppFile}"
                 }
             }
         }
