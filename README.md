@@ -1,10 +1,4 @@
-# jenkins--pipelines
-
-
-
-
-
-Jenkins Shared Library
+Jenkins
 ================================
 
 ## Overview
