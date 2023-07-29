@@ -2,7 +2,9 @@
 
 
 
-Jenkins Shared Library - README
+
+
+Jenkins Shared Library
 ================================
 
 ## Overview
@@ -29,18 +31,20 @@ To use the shared library in your Jenkins pipeline, follow these steps:
 
    For example, to use a function named myCustomStep from the shared library:
 
+```jenkinsfile
    pipeline {
        agent any
        stages {
            stage('Build') {
                steps {
-                   myCustomStep('Build something') // Call the custom function from the shared library
+                   myCustomStep('Build something') // Call the custom function from the  shared library
                }
            }
            // Add more stages as needed...
        }
        // Post actions and other pipeline configurations...
    }
+```
 
 4. Library Documentation
 
