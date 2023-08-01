@@ -1,5 +1,12 @@
 pipeline {
-    agent any
+   agent {
+        docker { image 'node:20' }
+    }
+
+    parameters {
+        string(name: 'repository', defaultValue: '', description: 'The Repository Link')
+        booleanParam(name: 'hasBuild', defaultValue: false, description: 'Does this app have build step?')
+    }
 
     stages {
         stage('Clean Workspace') {
@@ -7,32 +14,30 @@ pipeline {
                 cleanWs()
             }
         }
-
-        stage('Preparing env') {
-            steps {
-                script {
-                    def nodeHome = tool name: 'nodejs', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-                    if (nodeHome == null) {
-                        echo 'Node.js not found. Installing...'
-                        nodeHome = tool name: 'nodejs', type: 'jenkins.plugins.nodejs.tools.NodeJSInstaller'
-                    }
-                    env.PATH = "${nodeHome}/bin:${env.PATH}"
-                }
-            }
-        }
-
+        
         stage('Clone Repository') {
             steps {
                 script {
-                    sh "git clone ${Repository} ."
+                    sh "git clone ${params.repository} ."
                 }
             }
         }
 
-        stage('Running the app') {
+        stage('Add the dependencies') {
             steps {
                 script {
-                    sh "node ${AppFile}"
+                    sh "npm install  --ignore-scripts"
+                }
+            }
+        }
+
+        stage('Build the app') {
+            when {
+                expression { params.hasBuild }
+            }
+            steps {
+                script {
+                    sh "npm run build"
                 }
             }
         }
