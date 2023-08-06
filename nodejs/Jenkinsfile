@@ -6,6 +6,8 @@ pipeline {
     parameters {
         string(name: 'repository', defaultValue: '', description: 'The Repository Link')
         booleanParam(name: 'hasBuild', defaultValue: false, description: 'Does this app have build step?')
+        booleanParam(name: 'hasTest', defaultValue: false, description: 'Does this app have tests step?')
+        string(name: 'dockerImage', defaultValue: '', description: 'The docker image Link')
     }
 
     stages {
@@ -31,6 +33,17 @@ pipeline {
             }
         }
 
+        stage('Test the app') {
+            when {
+                expression { params.hasTest }
+            }            
+            steps {
+                script {
+                    sh "npm run test"
+                }
+            }
+        }        
+
         stage('Build the app') {
             when {
                 expression { params.hasBuild }
@@ -41,5 +54,21 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Build the container') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    }
+                    def dockerImage = "${params.dockerImage}:latest"
+                    sh "docker build -t ${params.dockerImage} ."
+                    sh "docker push ${params.dockerImage}"
+                }
+            }
+        }
+
+
     }
 }
